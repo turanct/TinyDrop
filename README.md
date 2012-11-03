@@ -1,4 +1,4 @@
-# Tinydrop
+# TinyDrop
 *An image upload droplet for Mac OSX, written in Applescript and PHP*
 
 
