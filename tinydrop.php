@@ -40,6 +40,9 @@ class TinyDrop {
 
 		// Get plugins
 		$this->getPlugins();
+
+		// Interpret
+		$this->interpret();
 	}
 
 
@@ -95,8 +98,11 @@ class TinyDrop {
 				// Send notification
 				$this->notify('1', str_replace(' ', '\ ', basename($this->arguments->data)));
 
+				// Output
+				echo $url;
+
 				// Return
-				return $url;
+				return true;
 			}
 
 			// Host doesn't exist
@@ -157,11 +163,11 @@ class TinyDrop {
 	 */
 	private function isImage($img) {
 		// Get image pathinfo
-		$pathinfo = pathinfo($imagepath);
+		$pathinfo = pathinfo($img);
 		$ext = strtolower($pathinfo['extension']);
 
 		// Check
-		return (bool) in_array($ext, array('jpg', 'jpeg', 'gif', 'png', 'tif', 'tiff', 'psd', 'ico'));
+		return in_array($ext, array('jpg', 'jpeg', 'gif', 'png', 'tif', 'tiff', 'psd', 'ico'));
 	}
 
 
@@ -194,7 +200,7 @@ class TinyDrop {
 
 
 /**
- * Model class for the plugins
+ * Base class for the plugins
  */
 class TDPlugin {
 	// --------------------------------------------------------- Variables ---------------------------------------------------------
@@ -229,7 +235,7 @@ class TDPlugin {
 	 * @param string	$user	The username of the service
 	 * @param string	$pass	The password of the service
 	 */
-	public function login($user, $pass) {
+	public function user($user, $pass) {
 		// Typecast
 		$this->user = (string) $user;
 		$this->pass = (string) $pass;
@@ -260,7 +266,7 @@ class TDPlugin {
 	 * Method to send a POST request.
 	 *
 	 * @param string		$url		The url to send the request to
-	 * @param array		$data	An array of data to send via POST
+	 * @param array			$data		An array of data to send via POST
 	 */
 	public function post_request($url, $data) {
 		// Typecast

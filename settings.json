@@ -1,5 +1,6 @@
 {
 	"host": "ImgUr",
 	"user": "",
-	"pass": ""
+	"pass": "",
+	"notifications": true
 }
