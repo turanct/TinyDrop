@@ -51,7 +51,7 @@ class TinyDrop {
 	 */
 	private function interpret() {
 		// Setup
-		if ($this->arguments->do === 1) {
+		if ($this->arguments->do == '1') {
 			// Raw settings
 			$settings = explode('PARSE',$this->arguments->data);
 
@@ -65,7 +65,7 @@ class TinyDrop {
 		}
 
 		// Plugins
-		elseif ($this->arguments->do === 2) {
+		elseif ($this->arguments->do == '2') {
 			// Output the plugins
 			echo implode('PARSE', $this->plugins);
 		}
