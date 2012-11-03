@@ -75,7 +75,7 @@ class TinyDrop {
 			// Check image
 			if ($this->isImage($this->arguments->data) === false) {
 				// Send notification
-				$this->notify('2', str_replace(" ", "\ ", basename($this->arguments->data)));
+				$this->notify(str_replace(" ", "\ ", basename($this->arguments->data)).' is not an image. File not uploaded.');
 
 				// Return
 				return false;
@@ -99,7 +99,7 @@ class TinyDrop {
 				$url = $host->upload($this->arguments->data);
 
 				// Send notification
-				$this->notify('1', str_replace(' ', '\ ', basename($this->arguments->data)));
+				$this->notify('Uploaded '.str_replace(' ', '\ ', basename($this->arguments->data)));
 
 				// Output
 				echo $url;
@@ -177,26 +177,20 @@ class TinyDrop {
 	/**
 	 * Method to show notifications
 	 *
-	 * @param int		The type of notification
 	 * @param string	The message for the notification
 	 */
-	private function notify($type, $message = '') {
+	private function notify($message = '') {
 		// Typecast
 		$type = (int) $type;
 		$message = (string) $message;
 
 		// Should we send notifications?
 		if ($this->settings->notifications === true) {
-			// Create the command
-			$cmd = 'osascript '.dirname(__FILE__).'/Scripts/GrowlNotify.scpt '.$type;
+			// Include notifications
+			require_once(dirname(__FILE__).'/NotifyToons.php');
 
-			// Add message if necessary
-			if (!empty($message)) {
-				$cmd .= ' '.$message;
-			}
-
-			// Execute the Applescript
-			exec($cmd);
+			// Notify
+			$nt = new NotifyToons('TinyDrop', $message, dirname(__FILE__).'/tinydrop.png');
 		}
 	}
 }
