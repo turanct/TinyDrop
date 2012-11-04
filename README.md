@@ -21,6 +21,7 @@ TinyDrop uses a plugin system to support multiple image hosts. These plugins are
 - Plugins must extend the TDPlugin class, to inherit basic functionality
 
 *There are three obligated methods for plugins*
+
 1. `__construct` in which you set the `url` class property to the (api) POST url.
 2. `postData` returning an array of post variables for our (api) call. We call this method with one argument, the path of the image we want to upload.
 3. `parse` returning the url of the uploaded image. We call this method with one argument, the plain response of the (api) call.
