@@ -1,6 +1,16 @@
 # TinyDrop
 *An image upload droplet for Mac OSX, written in Applescript and PHP*
 
+![TinyDrop logo](https://raw.github.com/turanct/TinyDrop/master/tinydrop.png)
+
+
+## How to use?
+- Get the TinyDrop app from the [Downloads section](https://github.com/turanct/TinyDrop/downloads) of this repository, or build it yourself.
+- Place the app in your Applications folder.
+- Drag the app to your dock, to have an icon in the dock.
+- Now you can just drag and drop one or more images on the application icon in your dock, to start uploading them to the active image host.
+- To change hosts, just run the application and select one.
+
 
 ## How to build?
 - Open TinyDrop.scpt in the AppleScript Editor
