@@ -104,6 +104,9 @@ class TinyDrop {
 				// Output
 				echo $url;
 
+				// Add to paste buffer
+				passthru('echo "' . $url . '" | pbcopy');
+
 				// Return
 				return true;
 			}
