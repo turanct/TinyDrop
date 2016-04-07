@@ -79,10 +79,10 @@ class TinyDrop
             // Check host
             if (in_array($this->settings->host, $this->plugins)) {
                 // Include plugin base
-                require_once(dirname(__FILE__).'/TDPlugin.php');
+                require_once(__DIR__ . '/TDPlugin.php');
 
                 // Include plugin
-                require_once(dirname(__FILE__).'/plugins/'.$this->settings->host.'.tdpi.php');
+                require_once(__DIR__ . '/../plugins/' . $this->settings->host . '.tdpi.php');
 
                 // Initiate
                 $host = new $this->settings->host;
@@ -120,7 +120,7 @@ class TinyDrop
         $this->plugins = array();
 
         // Open the dir
-        if ($handle = opendir(dirname(__FILE__).'/plugins/')) {
+        if ($handle = opendir(__DIR__ . '/../plugins/')) {
             // Walk through files
             while (false !== ($file = readdir($handle))) {
                 // Check check for plugin files.
