@@ -72,9 +72,6 @@ class TinyDrop
             // Upload
             // Check image
             if ($this->isImage($this->arguments->data) === false) {
-                // Send notification
-                $this->notify(str_replace(" ", "\ ", basename($this->arguments->data)).' is not an image. File not uploaded.');
-
                 // Return
                 return false;
             }
@@ -95,9 +92,6 @@ class TinyDrop
 
                 // Get Url
                 $url = $host->upload($this->arguments->data);
-
-                // Send notification
-                $this->notify('Uploaded '.str_replace(' ', '\ ', basename($this->arguments->data)));
 
                 // Output
                 echo $url;
@@ -178,26 +172,5 @@ class TinyDrop
 
         // Check
         return in_array($ext, array('jpg', 'jpeg', 'gif', 'png', 'tif', 'tiff', 'psd', 'ico'));
-    }
-
-    /**
-     * Method to show notifications
-     *
-     * @param string The message for the notification
-     */
-    private function notify($message = '')
-    {
-        // Typecast
-        $type = (int) $type;
-        $message = (string) $message;
-
-        // Should we send notifications?
-        if ($this->settings->notifications === true) {
-            // Include notifications
-            require_once(dirname(__FILE__).'/NotifyToons.php');
-
-            // Notify
-            $nt = new NotifyToons('TinyDrop', $message, dirname(__FILE__).'/tinydrop.png');
-        }
     }
 }
