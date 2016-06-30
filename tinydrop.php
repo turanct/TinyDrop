@@ -84,19 +84,19 @@ class TinyDrop {
 			// Check host
 			if (in_array($this->settings->host, $this->plugins)) {
 				// Include plugin base
-				require_once(dirname(__FILE__).'/TDPlugin.php');
+				require_once __DIR__ . '/Plugin.php';
+				require_once __DIR__ . '/HttpClient.php';
+				require_once __DIR__ . '/Curl.php';
 
 				// Include plugin
 				require_once(dirname(__FILE__).'/plugins/'.$this->settings->host.'.tdpi.php');
 
 				// Initiate
-				$host = new $this->settings->host;
-
-				// Use userdata
-				$host->user($this->settings->user, $this->settings->pass);
+				$client = new Curl();
+				$host = new $this->settings->host($client);
 
 				// Get Url
-				$url = $host->upload($this->arguments->data);
+				$url = $host->upload($this->arguments->data, $this->settings->user, $this->settings->pass);
 
 				// Send notification
 				$this->notify('Uploaded '.str_replace(' ', '\ ', basename($this->arguments->data)));

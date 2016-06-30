@@ -1,47 +1,34 @@
 <?php
-/**
- * ImgUr plugin for TinyDrop
- */
-class ImgUr extends TDPlugin {
-	// --------------------------------------------------------- Variables ---------------------------------------------------------
 
+final class ImgUr implements Plugin
+{
+    private $url;
+    private $clientId;
+    private $client;
 
+    public function __construct(HttpClient $client)
+    {
+        $this->url = 'https://api.imgur.com/3/image';
+        $this->clientId = '4eade42af1a0fd4';
 
-	// ---------------------------------------------------------- Methods ----------------------------------------------------------
-	/**
-	 * Constructor Method
-	 */
-	public function __construct() {
-		// Set api url
-		$this->url = 'https://api.imgur.com/2/upload.json';
+        $this->client = $client;
+    }
 
-		// Set api key
-		$this->apiKey = 'c29fc2d9d44dffd13c714651062044dd';
-	}
+    public function upload($image, $user = '', $pass = '')
+    {
+        $data = array(
+            'image' => "@$image",
+        );
 
+        $headers = array(
+            'Authorization: Client-ID ' . $this->clientId,
+        );
 
-	/**
-	 * Method to generate the post data
-	 *
-	 * @param string		$img		The image path
-	 */
-	protected function postData($img) {
-		// Return
-		return array('image' => "@$img", 'key' => $this->apiKey);
-	}
+        $raw = $this->client->send('POST', $this->url, $data, $headers);
 
+        $uploadedImage = json_decode($raw, true);
+        $uploadedImage = $uploadedImage['data'];
 
-	/**
-	 * Method to parse the output
-	 *
-	 * @param string		$result		The result of the request
-	 */
-	protected function parse($result) {
-		// Decode json
-		$decoded = json_decode($result);
-
-		// Return
-		return $decoded->upload->links->original;
-	}
+        return $uploadedImage['link'];
+    }
 }
-?>
