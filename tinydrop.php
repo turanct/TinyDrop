@@ -1,9 +1,6 @@
 <?php
-/**
- * Toon's TinyDrop Library
- */
+
 class TinyDrop {
-	// --------------------------------------------------------- Variables ---------------------------------------------------------
 	/**
 	 * @var string	Path to the settings file
 	 */
@@ -24,9 +21,6 @@ class TinyDrop {
 	 */
 	private $plugins;
 
-
-
-	// ---------------------------------------------------------- Methods ----------------------------------------------------------
 	/**
 	 * Constructor Method
 	 */
@@ -44,7 +38,6 @@ class TinyDrop {
 		// Interpret
 		$this->interpret();
 	}
-
 
 	/**
 	 * Method to interpret the arguments
@@ -74,10 +67,6 @@ class TinyDrop {
 		else {
 			// Check image
 			if ($this->isImage($this->arguments->data) === false) {
-				// Send notification
-				$this->notify(str_replace(" ", "\ ", basename($this->arguments->data)).' is not an image. File not uploaded.');
-
-				// Return
 				return false;
 			}
 
@@ -98,9 +87,6 @@ class TinyDrop {
 				// Get Url
 				$url = $host->upload($this->arguments->data, $this->settings->user, $this->settings->pass);
 
-				// Send notification
-				$this->notify('Uploaded '.str_replace(' ', '\ ', basename($this->arguments->data)));
-
 				// Output
 				echo $url;
 
@@ -118,7 +104,6 @@ class TinyDrop {
 			}
 		}
 	}
-
 
 	/**
 	 * Method to get a list of available plugins
@@ -142,7 +127,6 @@ class TinyDrop {
 		return $this->plugins;
 	}
 
-
 	/**
 	 * Method to read the settings file
 	 */
@@ -154,7 +138,6 @@ class TinyDrop {
 		return $this->settings;
 	}
 
-
 	/**
 	 * Method to write the settings file
 	 */
@@ -162,7 +145,6 @@ class TinyDrop {
 		// Write to file
 		@file_put_contents($this->settingsFile, @json_encode($this->settings));
 	}
-
 
 	/**
 	 * Method to check if the given file is an image
@@ -174,27 +156,6 @@ class TinyDrop {
 
 		// Check
 		return in_array($ext, array('jpg', 'jpeg', 'gif', 'png', 'tif', 'tiff', 'psd', 'ico'));
-	}
-
-
-	/**
-	 * Method to show notifications
-	 *
-	 * @param string	The message for the notification
-	 */
-	private function notify($message = '') {
-		// Typecast
-		$type = (int) $type;
-		$message = (string) $message;
-
-		// Should we send notifications?
-		if ($this->settings->notifications === true) {
-			// Include notifications
-			require_once(dirname(__FILE__).'/NotifyToons.php');
-
-			// Notify
-			$nt = new NotifyToons('TinyDrop', $message, dirname(__FILE__).'/tinydrop.png');
-		}
 	}
 }
 
@@ -213,4 +174,3 @@ if (basename(__FILE__) == basename($_SERVER['PHP_SELF'])) {
 	// Create TinyDrop instance
 	$td = new TinyDrop($settingsFile, $arguments);
 }
-?>
