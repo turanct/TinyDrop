@@ -2,6 +2,11 @@
 
 require_once __DIR__ . '/KeyValueStore.php';
 require_once __DIR__ . '/Settings.php';
+require_once __DIR__ . '/Plugins.php';
+require_once __DIR__ . '/Plugin.php';
+require_once __DIR__ . '/HttpClient.php';
+require_once __DIR__ . '/Curl.php';
+require_once __DIR__ . '/plugins/ImgUr.tdpi.php';
 
 final class TinyDrop
 {
@@ -16,20 +21,18 @@ final class TinyDrop
     private $arguments;
 
     /**
-     * @var array Plugins
+     * @var Plugins
      */
     private $plugins;
 
     /**
      * Constructor Method
      */
-    public function __construct(KeyValueStore $settings, $arguments)
+    public function __construct(KeyValueStore $settings, Plugins $plugins, $arguments)
     {
         $this->settings = $settings;
+        $this->plugins = $plugins;
         $this->arguments = (object) $arguments;
-
-        // Get plugins
-        $this->getPlugins();
 
         // Interpret
         $this->interpret();
@@ -46,7 +49,8 @@ final class TinyDrop
             $settings = explode('PARSE',$this->arguments->data);
 
             // Add to settings
-            $host = (in_array($settings[0], $this->plugins)) ? $settings[0] : $this->plugins[0];
+            $pluginName = $settings[0];
+            $host = ($this->plugins->knowsOf($pluginName)) ? $pluginName : $this->plugins->aWorkingPlugin();
             $this->settings->set('host', $host);
 
             $user = $settings[1];
@@ -59,7 +63,7 @@ final class TinyDrop
         // Plugins
         elseif ($this->arguments->do == '2') {
             // Output the plugins
-            echo implode('PARSE', $this->plugins);
+            echo implode('PARSE', $this->plugins->nameOfRegisteredPlugins());
         }
 
         // Upload
@@ -70,19 +74,11 @@ final class TinyDrop
             }
 
             // Check host
-            if (in_array($this->settings->get('host'), $this->plugins)) {
-                // Include plugin base
-                require_once __DIR__ . '/Plugin.php';
-                require_once __DIR__ . '/HttpClient.php';
-                require_once __DIR__ . '/Curl.php';
-
+            if (in_array($this->settings->get('host'), $this->plugins->nameOfRegisteredPlugins())) {
                 // Include plugin
                 $hostName = $this->settings->get('host');
-                require_once __DIR__ . '/plugins/' . $hostName . '.tdpi.php';
 
-                // Initiate
-                $client = new Curl();
-                $host = new $hostName($client);
+                $host = $this->plugins->getByName($hostName);
 
                 // Get Url
                 $url = $host->upload(
@@ -109,29 +105,6 @@ final class TinyDrop
     }
 
     /**
-     * Method to get a list of available plugins
-     */
-    private function getPlugins()
-    {
-        // Prepare array
-        $this->plugins = array();
-
-        // Open the dir
-        if ($handle = opendir(dirname(__FILE__).'/plugins/')) {
-            // Walk through files
-            while (false !== ($file = readdir($handle))) {
-                // Check check for plugin files.
-                if (substr($file, -9) == '.tdpi.php') {
-                    $this->plugins[] = substr($file, 0, -9);
-                }
-            }
-        }
-
-        // Return
-        return $this->plugins;
-    }
-
-    /**
      * Method to check if the given file is an image
      */
     private function isImage($img)
@@ -153,11 +126,18 @@ if (basename(__FILE__) == basename($_SERVER['PHP_SELF'])) {
     $settingsFile = __DIR__ . '/settings.json';
     $settings = new Settings($settingsFile);
 
+    // Get Curl client
+    $client = new Curl();
+
+    // Register plugins
+    $plugins = new Plugins();
+    $plugins->register('ImgUr', new ImgUr($client));
+
     // Create arguments
     $arguments = new stdClass();
     $arguments->do = $argv[1];
     $arguments->data = (isset($argv[2]) && !empty($argv[2])) ? $argv[2] : false ;
 
     // Create TinyDrop instance
-    $td = new TinyDrop($settings, $arguments);
+    $td = new TinyDrop($settings, $plugins, $arguments);
 }
