@@ -1,14 +1,12 @@
 <?php
 
+require_once __DIR__ . '/KeyValueStore.php';
+require_once __DIR__ . '/Settings.php';
+
 final class TinyDrop
 {
     /**
-     * @var string Path to the settings file
-     */
-    private $settingsFile;
-
-    /**
-     * @var object Settings
+     * @var KeyValueStore
      */
     private $settings;
 
@@ -25,14 +23,10 @@ final class TinyDrop
     /**
      * Constructor Method
      */
-    public function __construct($settingsFile, $arguments)
+    public function __construct(KeyValueStore $settings, $arguments)
     {
-        // Typecast
-        $this->settingsFile = (string) $settingsFile;
+        $this->settings = $settings;
         $this->arguments = (object) $arguments;
-
-        // Read settings
-        $this->getSettings();
 
         // Get plugins
         $this->getPlugins();
@@ -52,12 +46,14 @@ final class TinyDrop
             $settings = explode('PARSE',$this->arguments->data);
 
             // Add to settings
-            $this->settings->host = (in_array($settings[0], $this->plugins)) ? $settings[0] : $this->plugins[0];
-            $this->settings->user = $settings[1];
-            $this->settings->pass = $settings[2];
+            $host = (in_array($settings[0], $this->plugins)) ? $settings[0] : $this->plugins[0];
+            $this->settings->set('host', $host);
 
-            // Save
-            $this->setSettings();
+            $user = $settings[1];
+            $this->settings->set('user', $user);
+
+            $pass = $settings[2];
+            $this->settings->set('pass', $pass);
         }
 
         // Plugins
@@ -74,21 +70,26 @@ final class TinyDrop
             }
 
             // Check host
-            if (in_array($this->settings->host, $this->plugins)) {
+            if (in_array($this->settings->get('host'), $this->plugins)) {
                 // Include plugin base
                 require_once __DIR__ . '/Plugin.php';
                 require_once __DIR__ . '/HttpClient.php';
                 require_once __DIR__ . '/Curl.php';
 
                 // Include plugin
-                require_once __DIR__ . '/plugins/' . $this->settings->host . '.tdpi.php';
+                $hostName = $this->settings->get('host');
+                require_once __DIR__ . '/plugins/' . $hostName . '.tdpi.php';
 
                 // Initiate
                 $client = new Curl();
-                $host = new $this->settings->host($client);
+                $host = new $hostName($client);
 
                 // Get Url
-                $url = $host->upload($this->arguments->data, $this->settings->user, $this->settings->pass);
+                $url = $host->upload(
+                    $this->arguments->data,
+                    $this->settings->get('user'),
+                    $this->settings->get('pass')
+                );
 
                 // Output
                 echo $url;
@@ -131,27 +132,6 @@ final class TinyDrop
     }
 
     /**
-     * Method to read the settings file
-     */
-    private function getSettings()
-    {
-        // Get settings
-        $this->settings = (object) @json_decode(@file_get_contents($this->settingsFile));
-
-        // Return
-        return $this->settings;
-    }
-
-    /**
-     * Method to write the settings file
-     */
-    private function setSettings()
-    {
-        // Write to file
-        @file_put_contents($this->settingsFile, @json_encode($this->settings));
-    }
-
-    /**
      * Method to check if the given file is an image
      */
     private function isImage($img)
@@ -170,7 +150,8 @@ final class TinyDrop
 // Run the script if we're not included by another php file
 if (basename(__FILE__) == basename($_SERVER['PHP_SELF'])) {
     // Get settings file name
-    $settingsFile = dirname(__FILE__).'/settings.json';
+    $settingsFile = __DIR__ . '/settings.json';
+    $settings = new Settings($settingsFile);
 
     // Create arguments
     $arguments = new stdClass();
@@ -178,5 +159,5 @@ if (basename(__FILE__) == basename($_SERVER['PHP_SELF'])) {
     $arguments->data = (isset($argv[2]) && !empty($argv[2])) ? $argv[2] : false ;
 
     // Create TinyDrop instance
-    $td = new TinyDrop($settingsFile, $arguments);
+    $td = new TinyDrop($settings, $arguments);
 }
