@@ -29,37 +29,7 @@ final class TinyDrop
         $this->plugins = $plugins;
     }
 
-    /**
-     * Method to interpret the arguments
-     */
-    public function interpret($do, $data)
-    {
-        // Setup
-        if ($do == '1') {
-            // Raw settings
-            $settings = explode('PARSE', $data);
-            $pluginName = $settings[0];
-            $host = ($this->plugins->knowsOf($pluginName)) ? $pluginName : $this->plugins->aWorkingPlugin();
-            $user = $settings[1];
-            $pass = $settings[2];
-
-            $this->saveSettings($host, $user, $pass);
-        }
-
-        // Plugins
-        elseif ($do == '2') {
-            $this->outputPlugins();
-        }
-
-        // Upload
-        else {
-            $image = $data;
-
-            $this->uploadImage($image);
-        }
-    }
-
-    private function uploadImage($image)
+    public function uploadImage($image)
     {
         // Check image
         if ($this->isImage($image) === false) {
@@ -93,13 +63,15 @@ final class TinyDrop
         }
     }
 
-    private function outputPlugins()
+    public function outputPlugins()
     {
         echo implode('PARSE', $this->plugins->nameOfRegisteredPlugins());
     }
 
-    private function saveSettings($host, $user, $pass)
+    public function saveSettings($host, $user, $pass)
     {
+        $host = ($this->plugins->knowsOf($host)) ? $host : $this->plugins->aWorkingPlugin();
+
         $this->settings->set('host', $host);
         $this->settings->set('user', $user);
         $this->settings->set('pass', $pass);
@@ -139,5 +111,23 @@ if (basename(__FILE__) == basename($_SERVER['PHP_SELF'])) {
 
     $do = $argv[1];
     $data = (isset($argv[2]) && !empty($argv[2])) ? $argv[2] : false ;
-    $td->interpret($do, $data);
+
+
+    if ($do == '1') {
+        // Setup
+        $settings = explode('PARSE', $data);
+        $host = $settings[0];
+        $user = $settings[1];
+        $pass = $settings[2];
+
+        $td->saveSettings($host, $user, $pass);
+    } elseif ($do == '2') {
+        // Plugins
+        $td->outputPlugins();
+    } else {
+        // Upload
+        $image = $data;
+
+        $td->uploadImage($image);
+    }
 }
