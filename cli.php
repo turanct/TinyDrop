@@ -6,7 +6,7 @@ require_once __DIR__ . '/Plugins.php';
 require_once __DIR__ . '/Plugin.php';
 require_once __DIR__ . '/HttpClient.php';
 require_once __DIR__ . '/Curl.php';
-require_once __DIR__ . '/plugins/ImgUr.tdpi.php';
+require_once __DIR__ . '/plugins/ImgUr.php';
 require_once __DIR__ . '/TinyDrop.php';
 require_once __DIR__ . '/Factory.php';
 
