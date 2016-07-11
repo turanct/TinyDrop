@@ -26,12 +26,11 @@ TinyDrop uses a plugin system to support multiple image hosts. These plugins are
 
 *The plugins must follow these conventions:*
 
-- The filename must be the same as the class name, followed by `.tdpi.php`. For example if you create a plugin for host `X`, your class will be called `X` and the file will be called `X.tdpi.php`
+- The filename must be the same as the class name, followed by `.php`. For example if you create a plugin for host `X`, your class will be called `X` and the file will be called `X.php`
 - Plugins reside in the `plugins` directory inside the app. `Contents > Resources > plugins`
 - Plugins must implement the Plugin class
 
-*There are three obligated methods for plugins*
 
-1. `__construct` in which you set the `url` class property to the (api) POST url.
-2. `postData` returning an array of post variables for our (api) call. We call this method with one argument, the path of the image we want to upload.
-3. `parse` returning the url of the uploaded image. We call this method with one argument, the plain response of the (api) call.
+# Contributing
+
+Feel free to fork and send pull requests!
