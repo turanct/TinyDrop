@@ -7,6 +7,7 @@ require_once __DIR__ . '/Plugin.php';
 require_once __DIR__ . '/HttpClient.php';
 require_once __DIR__ . '/Curl.php';
 require_once __DIR__ . '/plugins/ImgUr.tdpi.php';
+require_once __DIR__ . '/Factory.php';
 
 final class TinyDrop
 {
@@ -95,23 +96,10 @@ final class TinyDrop
 
 // Run the script if we're not included by another php file
 if (basename(__FILE__) == basename($_SERVER['PHP_SELF'])) {
-    // Get settings file name
-    $settingsFile = __DIR__ . '/settings.json';
-    $settings = new Settings($settingsFile);
-
-    // Get Curl client
-    $client = new Curl();
-
-    // Register plugins
-    $plugins = new Plugins();
-    $plugins->register('ImgUr', new ImgUr($client));
-
-    // Create TinyDrop instance
-    $td = new TinyDrop($settings, $plugins);
+    $td = Factory::getTinyDropInstance();
 
     $do = $argv[1];
     $data = (isset($argv[2]) && !empty($argv[2])) ? $argv[2] : false ;
-
 
     if ($do == '1') {
         // Setup
