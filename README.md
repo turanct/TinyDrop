@@ -28,7 +28,7 @@ TinyDrop uses a plugin system to support multiple image hosts. These plugins are
 
 - The filename must be the same as the class name, followed by `.php`. For example if you create a plugin for host `X`, your class will be called `X` and the file will be called `X.php`
 - Plugins reside in the `plugins` directory inside the app. `Contents > Resources > plugins`
-- Plugins must implement the Plugin class
+- Plugins must implement the Plugin interface
 
 
 # Contributing
