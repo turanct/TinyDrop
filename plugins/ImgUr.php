@@ -20,6 +20,10 @@ final class ImgUr implements Plugin
             'image' => "@$image",
         );
 
+        if (function_exists('curl_file_create')) {
+            $data['image'] = curl_file_create($image);
+        }
+
         $headers = array(
             'Authorization: Client-ID ' . $this->clientId,
         );
